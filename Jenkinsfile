@@ -29,7 +29,16 @@ pipeline {
             steps {
                 echo 'Installing Python dependencies...'
                 sh '''
-                    pip3 install --user -r requirements.txt
+                    # Install PyInstaller directly
+                    pip3 install --user pyinstaller
+                    
+                    # Check if requirements.txt exists and install from it
+                    if [ -f requirements.txt ]; then
+                        echo "Installing additional dependencies from requirements.txt"
+                        pip3 install --user -r requirements.txt
+                    else
+                        echo "No requirements.txt found, using direct PyInstaller installation"
+                    fi
                 '''
             }
         }
@@ -58,9 +67,6 @@ pipeline {
             steps {
                 echo 'Building application with PyInstaller...'
                 sh '''
-                    # Install PyInstaller if not in requirements.txt
-                    pip3 install --user pyinstaller
-                    
                     # Build the executable
                     python3 -m PyInstaller --onefile hello.py
                     
